@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "@network-utils/arp-lookup": "^2.0.2",
+    "express": "^4.18.2",
+    "got": "^13.0.0",
+    "net": "^1.0.2",
+    "node-ssdp": "^4.0.1",
+    "wakeonlan": "^0.1.0",
+    "xml-js": "^1.6.11",
+    "yaml": "^2.3.2"
+  },
+  "type": "module"
+}

@@ -1,0 +1,15 @@
+mediaFileServer:
+  port: 3000
+
+notificationServer:
+  port: 3001
+
+webServer:
+  port: 8080
+
+common:
+  hostname: 192.168.100.109
+  protocol: http
+  getPositionInfoIntervalMillis: 2000
+  eventCooldownTimeMillis: 30000
+  scanDelayAfterWakeupTimeMillis: 15000

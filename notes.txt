@@ -1,0 +1,4 @@
+Servers:
+    1. Delivery of Media Content
+    2. Notifications Server
+    3. HTTP Web App Server

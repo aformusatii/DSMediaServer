@@ -1,0 +1,38 @@
+<div>
+
+    <div class="top-menu-box">
+        <button type="button" class="btn btn-primary" ng-click="sendWakeOnLan()">Wakeup!</button>
+        <button type="button" class="btn btn-primary" ng-click="scan()">Discover</button>
+        <button type="button" class="btn btn-primary" ng-click="setPlayback(true)" ng-disabled="playback.playing">Start</button>
+        <button type="button" class="btn btn-primary" ng-click="setPlayback(false)" ng-disabled="!playback.playing">Stop</button>
+    </div>
+    <hr>
+
+    <table class="table table-striped table-sm">
+        <thead>
+        <tr>
+            <th scope="col"><i class="bi bi-check-circle" style="color: #0d6efd;"></i></th>
+            <th scope="col">MAC</th>
+            <th scope="col">IP</th>
+            <th scope="col">Name</th>
+            <th scope="col">Model</th>
+            <th scope="col">Info</th>
+            <th scope="col">Playback State</th>
+            <th scope="col">Connection State</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="device in devices track by $index">
+            <td><input class="form-check-input" type="checkbox" ng-model="device.selected" ng-change="updateDevice(device);" id="flexCheckDefault"></td>
+            <td>{{device.mac}}</td>
+            <td>{{device.ip}}</td>
+            <td>{{device.friendlyName}}</td>
+            <td>{{device.modelName}}, {{device.modelDescription}}</td>
+            <td style="font-size: 10px">{{device.positionInfo.TrackURI}} - {{device.positionInfo.RelTime}}</td>
+            <td>{{device.playbackState}}</td>
+            <td>{{device.connectionState}}</td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>

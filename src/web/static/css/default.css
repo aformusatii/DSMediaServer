@@ -1,0 +1,16 @@
+main {
+    display: flex;
+    flex-wrap: nowrap;
+    height: -webkit-fill-available;
+    max-height: 100vh;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.content-box {
+    padding: 5px;
+}
+
+.top-menu-box {
+    margin-top: 11px;
+}
