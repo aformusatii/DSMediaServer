@@ -1,7 +1,7 @@
 import HttpCustomClient from './http-custom-client.js';
 import {copyProperties, extractBaseUrl, isSet} from "./utils.js";
 import CONFIG from "./config.cjs";
-import {GetPositionInfo, GetTransportInfo, SetAVTransportURI, StartPlayback, StopPlayback} from './soap-requests.js';
+import {GetPositionInfo, GetTransportInfo, SetAVTransportURI, StartPlayback, StopPlayback} from './upnp-requests.js';
 import got from 'got';
 import {parseDeviceInfo, parseGetPositionInfoResponse, parseGetTransportInfoResponse} from './upnp-xml-parser.js';
 
