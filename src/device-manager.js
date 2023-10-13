@@ -1,11 +1,11 @@
-import {copyProperties, isNotSet, isSet, normalizeMAC} from './utils.js';
+import {copyProperties, isNotSet, isSet, normalizeMAC, objToStr, setAsyncInterval} from './utils.js';
 import Device from './device.js';
 import UpnpClient from './upnp-client.js';
 import fs from 'fs';
 import path from 'path';
 import {fileURLToPath} from 'url';
-import CONFIG from './config.cjs'
-import {ACTIVITY, CONNECTION_STATE, PLAYBACK_STATE, SETTINGS} from './constants.js';
+import {CONFIG} from './configuration.js';
+import {ACTIVITY, CONNECTION_STATE, EVENTS, PLAYBACK_STATE, SETTINGS} from './constants.js';
 
 // Fix for __dirname is not defined in ES module scope
 const __filename = fileURLToPath(import.meta.url);
@@ -13,23 +13,30 @@ const __dirname = path.dirname(__filename);
 const DEVICES_FILE = path.join(__dirname, '..', 'devices.json');
 
 export default class DeviceManager {
+
     constructor(appContext) {
         this.appContext = appContext;
 
         const _this = this;
 
-        this.appContext.eventBus.on('SSPD_REPLY', async function(message) {
+        this.appContext.eventBus.on(EVENTS.SSPD_REPLY, async function(message) {
             await _this.onDiscover(message);
         });
 
-        this.appContext.eventBus.on('UPNP_NOTIFICATION', function(message) {
-            (async function() {
-                try {
-                    await _this.onAVTransportEvent(message);
-                } catch (ex) {
-                    console.log('UPNP_NOTIFICATION Exception:', ex);
-                }
-            })();
+        this.appContext.eventBus.on(EVENTS.UPNP_NOTIFICATION, async function(message) {
+            await _this.onAVTransportEvent(message);
+        });
+
+        this.appContext.eventBus.on(EVENTS.MEDIA_FILES_UPDATE, async function(message) {
+            await _this.onMediaFilesUpdate(message);
+        });
+
+        this.appContext.eventBus.on(EVENTS.SCHEDULER_ON, async function(message) {
+            await _this.setPlayback(true);
+        });
+
+        this.appContext.eventBus.on(EVENTS.SCHEDULER_OFF, async function(message) {
+            await _this.setPlayback(false);
         });
 
         this.devicesMap = {};
@@ -149,9 +156,16 @@ export default class DeviceManager {
         device.disableTemporaryActivity(ACTIVITY.UPNP_CALLS, 5000);
         device.disableTemporaryActivity(ACTIVITY.GET_POSITION_INFO, 5000);
 
-        console.log(device.toString(), `playNextMedia[about to send]`);
+        const mediaFile = device.getNextMediaFile();
+        if (isNotSet(mediaFile)) {
+            console.log(device.toString(), 'Can\'t find next media file, stop playback');
+            return;
+        }
 
-        const mediaUrl = `${CONFIG.common.protocol}://${CONFIG.common.hostname}:${CONFIG.mediaFileServer.port}/media/${device.data.key}/media.mpg`;
+        const mediaUrl = `${CONFIG.common.protocol}://${CONFIG.common.hostname}:${CONFIG.mediaFileServer.port}/media/${device.data.key}/${mediaFile.key}`;
+
+        console.log(device.toString(), `playNextMedia[about to send]`, objToStr(mediaFile));
+
         const setResult = await this.upnpClient.setAVTransportURI(device.data.avTransport.controlURL, mediaUrl);
         const playResult = await this.upnpClient.startPlayback(device.data.avTransport.controlURL);
 
@@ -173,12 +187,12 @@ export default class DeviceManager {
             });
 
             // use our fancy eventBus to start SSPD scan
-            this.emitEvent('SSPD_SCAN_START');
+            this.emitEvent(EVENTS.SSPD_SCAN_START);
 
             this.sendWakeOnLanAll();
 
             setTimeout(function(eventBus) {
-                eventBus.emit('SSPD_SCAN_START');
+                eventBus.emit(EVENTS.SSPD_SCAN_START);
             }, CONFIG.common.scanDelayAfterWakeupTimeMillis, this.appContext.eventBus);
 
         } else {
@@ -201,8 +215,6 @@ export default class DeviceManager {
             return;
         }
 
-        await this.verifyPlayback(device);
-
         if (device.hasOneOfConnectionStates(CONNECTION_STATE.DISCONNECTED, CONNECTION_STATE.ERROR_STATE)) {
             // Blocked for calls
             console.log(device.toString(), 'Skip->onPeriodicGetPositionInfo, device connection state DISCONNECTED or ERROR_STATE');
@@ -211,11 +223,11 @@ export default class DeviceManager {
 
         try {
             const positionInfoResponse = await this.upnpClient.getPositionInfo(device.data.avTransport.controlURL);
-            const transportInfoResponse = await this.upnpClient.getTransportInfo(device.data.avTransport.controlURL);
+            /* const transportInfoResponse = await this.upnpClient.getTransportInfo(device.data.avTransport.controlURL);
 
             if (transportInfoResponse.ok) {
                 console.log(device.toString(), `TransportInfo[CurrentTransportState->${transportInfoResponse.data.CurrentTransportState}, CurrentTransportStatus->${transportInfoResponse.data.CurrentTransportStatus}`);
-            }
+            } */
 
             if (positionInfoResponse.ok) {
                 device.data.positionInfo = positionInfoResponse.data;
@@ -246,44 +258,93 @@ export default class DeviceManager {
         }
    }
 
-   async verifyPlayback(device) {
-        const disconnected = device.hasOneOfConnectionStates(CONNECTION_STATE.DISCONNECTED, CONNECTION_STATE.ERROR_STATE);
+   async onRenewSubscription(device) {
+
+       if (device.hasOneOfConnectionStates(CONNECTION_STATE.DISCONNECTED, CONNECTION_STATE.ERROR_STATE)) {
+           // Blocked for calls
+           console.log(device.toString(), 'Skip->onRenewSubscription, device connection state DISCONNECTED or ERROR_STATE');
+           return;
+       }
+
+        const renewResult = await this.renewSubscribeForAVTransportEvents(device);
+
+        if (!renewResult) {
+            await this.unsubscribeFromAVTransportEvents(device);
+
+            const subscribeResult = await this.subscribeForAVTransportEvents(device);
+
+            if (!subscribeResult.ok) {
+                // couldn't subscribe :(
+                device.setConnectionState(CONNECTION_STATE.ERROR_STATE);
+            }
+        }
+   }
+
+   async onWatchdogCheck(device) {
+       const disconnected = device.hasOneOfConnectionStates(CONNECTION_STATE.DISCONNECTED, CONNECTION_STATE.ERROR_STATE);
 
        if (this.playbackInProgress && device.data.selected && disconnected) {
            // enable back the SSDP
            device.resetDisabledActivity(ACTIVITY.SSDP);
 
            // use our fancy eventBus to start SSPD scan
-           this.emitEvent('SSPD_SCAN_START');
+           this.emitEvent(EVENTS.SSPD_SCAN_START);
 
            // Send wake-on-lan to the device
-           this.emitEvent('WAKE_UP', device);
+           this.emitEvent(EVENTS.WAKE_UP, device);
 
            setTimeout(function(eventBus) {
-               eventBus.emit('SSPD_SCAN_START');
+               eventBus.emit(EVENTS.SSPD_SCAN_START);
            }, CONFIG.common.scanDelayAfterWakeupTimeMillis, this.appContext.eventBus);
        }
    }
 
+   async onMediaFilesUpdate(message) {
+       this.executeForEachDevice(device => {
+            device.setMediaFiles(message);
+       })
+   }
+
    async updateDeviceData(deviceKey, data) {
         const device = this.devicesMap[deviceKey];
+
+        const selectedFlagChanged = data.selected !== device.data.selected;
+
         copyProperties(data, device.data);
 
-        if (data.selected) {
-            await this.reconnectToDevice(device);
-        } else {
-            await this.disconnectFromDevice(device);
+        if (selectedFlagChanged) {
+            if (data.selected) {
+                //await this.reconnectToDevice(device);
+                device.setConnectionState(CONNECTION_STATE.DISCONNECTED);
+            } else {
+                //await this.disconnectFromDevice(device);
+                device.setConnectionState(CONNECTION_STATE.DISABLED);
+            }
         }
 
-        this.saveDevicesWithDelay();
+        await this.saveDevices();
+    }
+
+    async deleteDevice(deviceKey) {
+        delete this.devicesMap[deviceKey];
+        await this.saveDevices();
     }
 
     async disconnectFromDevice(device) {
         await this.upnpClient.stopPlayback(device);
-        await this.upnpClient.unsubscribeFromAVTransportEvents(device);
+
+        await this.unsubscribeFromAVTransportEvents(device);
 
         if (isSet(device.timerGetPositionInfo)) {
             clearInterval(device.timerGetPositionInfo);
+        }
+
+        if (isSet(device.timerRenewSubscription)) {
+            clearInterval(device.timerRenewSubscription);
+        }
+
+        if (isSet(device.timerWatchdogCheck)) {
+            clearInterval(device.timerWatchdogCheck);
         }
 
         device.setConnectionState(CONNECTION_STATE.DISCONNECTED);
@@ -295,24 +356,98 @@ export default class DeviceManager {
 
         device.setConnectionState(CONNECTION_STATE.CONNECTING);
 
-        const subscribeResponse = await this.upnpClient.subscribeForAVTransportEvents(device);
+        const subscribeResult = await this.subscribeForAVTransportEvents(device);
 
-        if (!subscribeResponse.ok) {
+        if (!subscribeResult.ok) {
             // couldn't subscribe :(
             device.setConnectionState(CONNECTION_STATE.ERROR_STATE);
+            return;
         }
 
         const _this = this;
 
-        device.timerGetPositionInfo = setInterval(async function(device) {
+        device.timerGetPositionInfo = setAsyncInterval('GetPositionInfo', async function(device) {
             await _this.onPeriodicGetPositionInfo(device);
         }, CONFIG.common.getPositionInfoIntervalMillis, device);
+
+        let renewSubscriptionTimeout = (subscribeResult.timeout * 1000) - 3000;
+        if (renewSubscriptionTimeout > CONFIG.common.renewUPnPSubscriptionIntervalMillis) {
+            renewSubscriptionTimeout = CONFIG.common.renewUPnPSubscriptionIntervalMillis;
+        }
+
+        device.timerRenewSubscription = setAsyncInterval('RenewSubscription', async function(device) {
+            await _this.onRenewSubscription(device);
+        }, renewSubscriptionTimeout, device);
+
+        device.timerWatchdogCheck = setAsyncInterval('WatchdogCheck', async function(device) {
+            await _this.onWatchdogCheck(device);
+        }, CONFIG.common.watchdogIntervalMillis, device);
+    }
+
+    /* ======================================================================================== */
+    /*  Subscribe logic                                                                         */
+    /* ======================================================================================== */
+    async subscribeForAVTransportEvents(device) {
+        console.log(device.toString(), 'Try to subscribe.');
+
+        const notifyUrl = `${CONFIG.common.protocol}://${CONFIG.common.hostname}:${CONFIG.notificationServer.port}/notify/${device.data.key}`;
+
+        const response = await this.upnpClient.sendSubscribe(
+            device.data.avTransport.eventSubURL,
+            notifyUrl
+        );
+
+        if (response.ok) {
+            console.log(device.toString(), 'Successfully subscribed.', objToStr(response));
+            device.data.subscription = {};
+            device.data.subscription.SID = response.SID;
+        } else {
+            console.log(device.toString(), 'Couldn\'t subscribe.');
+        }
+
+        return response;
+    }
+
+    async renewSubscribeForAVTransportEvents(device) {
+        console.log(device.toString(), 'Try to renew subscription.');
+
+        const response = await this.upnpClient.sendRenewSubscribe(
+            device.data.avTransport.eventSubURL,
+            device.data.subscription.SID
+        );
+
+        if (response.ok) {
+            console.log(device.toString(), 'Successfully renewed subscription.', objToStr(response));
+            return true;
+        } else {
+            console.log(device.toString(), 'Couldn\'t renewed subscription.');
+            return false;
+        }
+    }
+
+    async unsubscribeFromAVTransportEvents(device) {
+        if (isSet(device.data.subscription)) {
+            console.log(device.toString(), 'Try to unsubscribe.');
+
+            const response = await this.upnpClient.sendUnsubscribe(
+                device.data.avTransport.eventSubURL,
+                device.data.subscription.SID
+            );
+
+            if (response.ok) {
+                console.log(device.toString(), 'Successfully unsubscribed.');
+            } else {
+                console.log(device.toString(), 'Couldn\'t unsubscribed.');
+            }
+
+            device.data.subscription = null;
+        }
     }
 
     sendWakeOnLanAll() {
         this.executeForEachDevice(function(device, eventBus) {
             if (device.data.selected) {
-                eventBus.emit('WAKE_UP', device);
+                eventBus.emit(EVENTS.WAKE_UP, device);
             }
         }, this.appContext.eventBus);
     }

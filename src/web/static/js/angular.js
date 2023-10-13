@@ -30,6 +30,10 @@ window.THEAPP = (function(angular) {
                 });
         });
 
+    angularJsInitHandlers.forEach(callback => {
+        callback(app);
+    });
+
     return app;
 
 })(window.angular);

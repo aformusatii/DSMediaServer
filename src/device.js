@@ -15,6 +15,9 @@ export default class Device {
         this.data.connectionState = CONNECTION_STATE.DISCONNECTED;
 
         this.connectionErrorCount = 0;
+
+        this.mediaFiles = [];
+        this.mediaFileIndex = 0;
     }
 
     /* ============================================================================== */
@@ -80,6 +83,22 @@ export default class Device {
 
     getConnectionErrorCounter() {
         return this.connectionErrorCount;
+    }
+
+    /* ============================================================================== */
+    setMediaFiles(files) {
+        this.mediaFiles = files;
+    }
+
+    getNextMediaFile() {
+        if (this.mediaFileIndex >= this.mediaFiles.length) {
+            this.mediaFileIndex = 0;
+        }
+
+        const mediaFile = this.mediaFiles[this.mediaFileIndex];
+
+        this.mediaFileIndex++;
+        return mediaFile;
     }
 
     /* ============================================================================== */

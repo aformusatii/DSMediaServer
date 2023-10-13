@@ -1,6 +1,5 @@
 import HttpCustomClient from './http-custom-client.js';
-import {copyProperties, extractBaseUrl, isSet} from "./utils.js";
-import CONFIG from "./config.cjs";
+import {copyProperties, extractBaseUrl, extractTimeout, isSet, objToStr} from "./utils.js";
 import {GetPositionInfo, GetTransportInfo, SetAVTransportURI, StartPlayback, StopPlayback} from './upnp-requests.js';
 import got from 'got';
 import {parseDeviceInfo, parseGetPositionInfoResponse, parseGetTransportInfoResponse} from './upnp-xml-parser.js';
@@ -28,43 +27,6 @@ export default class UpnpClient {
         if (device.data.renderingControl) {
             device.data.renderingControl.controlURL = `${baseUrl}${device.data.renderingControl.controlURL}`
             device.data.renderingControl.eventSubURL = `${baseUrl}${device.data.renderingControl.eventSubURL}`
-        }
-    }
-
-    async subscribeForAVTransportEvents(device) {
-        const notifyUrl = `${CONFIG.common.protocol}://${CONFIG.common.hostname}:${CONFIG.notificationServer.port}/notify/${device.data.key}`;
-        console.log(device.toString(), 'Try to subscribe.');
-
-        const response = await this.sendSubscribe({
-            url: device.data.avTransport.eventSubURL,
-            callbackUrl: notifyUrl
-        });
-
-        if (response.ok) {
-            console.log(device.toString(), 'Successfully subscribed.');
-            device.data.subscription = {};
-            device.data.subscription.SID = response.SID;
-        } else {
-            console.log(device.toString(), 'Couldn\'t subscribe.');
-        }
-
-        return response;
-    }
-
-    async unsubscribeFromAVTransportEvents(device) {
-        if (isSet(device.data.subscription)) {
-            const response = await this.sendUnsubscribe({
-                url: device.data.avTransport.eventSubURL,
-                SID: device.data.subscription.SID
-            });
-
-            if (response.ok) {
-                console.log(device.toString(), 'Successfully unsubscribed.');
-            } else {
-                console.log(device.toString(), 'Couldn\'t unsubscribed.');
-            }
-
-            device.data.subscription = null;
         }
     }
 
@@ -166,7 +128,7 @@ export default class UpnpClient {
         }
     }
 
-    async sendSubscribe(options) {
+    async sendSubscribe(eventSubURL, callbackUrl) {
         const result = {ok: false};
 
         try {
@@ -174,9 +136,9 @@ export default class UpnpClient {
 
             const httpOptions = {
                 method: 'SUBSCRIBE',
-                url: options.url,
+                url: eventSubURL,
                 headers: {
-                    'Callback': `<${options.callbackUrl}>`,
+                    'Callback': `<${callbackUrl}>`,
                     'NT': 'upnp:event',
                     'Timeout': 'Second-36000',
                     'Accept-Encoding': 'identity',
@@ -188,6 +150,7 @@ export default class UpnpClient {
 
             if (response.statusCode === 200) {
                 result.SID = response.headers['sid'];
+                result.timeout = extractTimeout(response.headers['timeout']);
                 result.ok = true;
             } else {
                 console.log('NativeClient->sendSubscribe', `Unexpected HTTP Status Code [${response.statusCode}]`, response.body);
@@ -200,7 +163,40 @@ export default class UpnpClient {
         return result;
     }
 
-    async sendUnsubscribe(options) {
+    async sendRenewSubscribe(eventSubURL, sid) {
+        const result = {ok: false};
+
+        try {
+            const client = new HttpCustomClient();
+
+            const httpOptions = {
+                method: 'SUBSCRIBE',
+                url: eventSubURL,
+                headers: {
+                    'SID': sid,
+                    'Timeout': 'Second-36000',
+                    'Accept-Encoding': 'identity',
+                    'Connection': 'close'
+                }
+            }
+
+            const response = await client.sendRequest(httpOptions);
+
+            if (response.statusCode === 200) {
+                result.timeout = extractTimeout(response.headers['timeout']);
+                result.ok = true;
+            } else {
+                console.log('NativeClient->sendRenewSubscribe', `Unexpected HTTP Status Code [${response.statusCode}]`, response.body);
+            }
+
+        } catch (error) {
+            console.log('NativeClient->sendRenewSubscribe', 'Error:', error);
+        }
+
+        return result;
+    }
+
+    async sendUnsubscribe(eventSubURL, sid) {
         const result = {ok: false};
 
         try {
@@ -208,9 +204,9 @@ export default class UpnpClient {
 
             const httpOptions = {
                 method: 'UNSUBSCRIBE',
-                url: options.url,
+                url: eventSubURL,
                 headers: {
-                    'SID': options.SID,
+                    'SID': sid,
                     'Accept-Encoding': 'identity',
                     'Connection': 'close'
                 }

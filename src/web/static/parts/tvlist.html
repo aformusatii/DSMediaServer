@@ -1,10 +1,11 @@
 <div>
 
     <div class="top-menu-box">
-        <button type="button" class="btn btn-primary" ng-click="sendWakeOnLan()">Wakeup!</button>
-        <button type="button" class="btn btn-primary" ng-click="scan()">Discover</button>
-        <button type="button" class="btn btn-primary" ng-click="setPlayback(true)" ng-disabled="playback.playing">Start</button>
-        <button type="button" class="btn btn-primary" ng-click="setPlayback(false)" ng-disabled="!playback.playing">Stop</button>
+        <button type="button" class="btn btn-info" ng-click="sendWakeOnLan()"><i class="bi bi-ethernet"></i> Wakeup!</button>
+        <button type="button" class="btn btn-primary" ng-click="scan()"><i class="bi bi-search"></i> Discover</button>
+        <button type="button" class="btn btn-primary" ng-click="setPlayback(true)" ng-disabled="playback.playing"><i class="bi bi-play"></i> Start</button>
+        <button type="button" class="btn btn-primary" ng-click="setPlayback(false)" ng-disabled="!playback.playing"><i class="bi bi-stop"></i> Stop</button>
+        <button type="button" class="btn" ng-class="{'btn-secondary': !scheduler.enabled, 'btn-primary': scheduler.enabled}" ng-click="openScheduler()"><i class="bi bi-alarm"></i> Scheduler</button>
     </div>
     <hr>
 
@@ -15,24 +16,28 @@
             <th scope="col">MAC</th>
             <th scope="col">IP</th>
             <th scope="col">Name</th>
-            <th scope="col">Model</th>
-            <th scope="col">Info</th>
-            <th scope="col">Playback State</th>
+            <th scope="col">Track Time</th>
             <th scope="col">Connection State</th>
+            <th scope="col">Playback State</th>
+            <th scope="col"></th>
         </tr>
         </thead>
         <tbody>
         <tr ng-repeat="device in devices track by $index">
-            <td><input class="form-check-input" type="checkbox" ng-model="device.selected" ng-change="updateDevice(device);" id="flexCheckDefault"></td>
+            <td><input class="form-check-input" type="checkbox" ng-model="device.selected" ng-change="updateDevice(device);"></td>
             <td>{{device.mac}}</td>
             <td>{{device.ip}}</td>
             <td>{{device.friendlyName}}</td>
-            <td>{{device.modelName}}, {{device.modelDescription}}</td>
-            <td style="font-size: 10px">{{device.positionInfo.TrackURI}} - {{device.positionInfo.RelTime}}</td>
+            <td>{{device.positionInfo.RelTime}}</td>
+            <td class="status" ng-class="device.connectionState">{{device.connectionState}}</td>
             <td>{{device.playbackState}}</td>
-            <td>{{device.connectionState}}</td>
+            <td><i class="bi bi-pencil-square btn-icon" ng-click="openEditTv(device)"></i></td>
+            <td><i class="bi bi-trash3-fill" ng-click="deleteTv(device)"></i></td>
         </tr>
         </tbody>
     </table>
+
+    <tv-edit-modal controller="modalEditTv"></tv-edit-modal>
+    <scheduler-modal controller="modalScheduler" scheduler="scheduler"></scheduler-modal>
 
 </div>

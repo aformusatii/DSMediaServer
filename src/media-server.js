@@ -1,11 +1,22 @@
-import CONFIG from './config.cjs'
+import {CONFIG} from './configuration.js';
 import express from 'express';
 import fs from "fs";
+import {EVENTS} from './constants.js';
+import {isNotSet} from "./utils.js";
 
 const app = express();
 
+let mediaFilesMap = {};
+
 const headMediaFile = async function(req, res) {
     console.log('HEAD Media', req.params);
+
+    const file = mediaFilesMap[req.params.mediaId];
+    if (isNotSet(file)) {
+        console.log('HEAD', req.params.deviceId, 'File not found:', req.params.mediaId);
+        res.status(404).end();
+        return;
+    }
 
     res.set({
         'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -22,6 +33,13 @@ const headMediaFile = async function(req, res) {
 const getMediaFile = async function(req, res) {
     console.log('GET Media', req.params);
 
+    const file = mediaFilesMap[req.params.mediaId];
+    if (isNotSet(file)) {
+        console.log('GET', req.params.deviceId, 'File not found:', req.params.mediaId);
+        res.status(404).send('404 - File Not Found');
+        return;
+    }
+
     res.set({
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Content-type': 'application/octet-stream',
@@ -30,7 +48,8 @@ const getMediaFile = async function(req, res) {
         'Connection': 'close'
     });
 
-    const filePath = 'C:\\Development\\repository\\IDSSMediaServer\\ffmpeg\\tmp\\video1.ts';
+    const filePath = file.absolutePath;
+    //const filePath = 'C:\\Development\\repository\\IDSSMediaServer\\ffmpeg\\tmp\\video1.ts';
     //const filePath = 'C:\\temp\\video_conversion\\out.ts';
 
     const CHUNK_SIZE = 1048576;
@@ -57,13 +76,22 @@ const getMediaFile = async function(req, res) {
     });
 }
 
+const onUpdateMediaFiles = function(files) {
+    mediaFilesMap = {};
+
+    files.forEach(file => {
+        mediaFilesMap[file.key] = file;
+    });
+}
+
 export function setupServer(appContext) {
+    appContext.eventBus.on(EVENTS.MEDIA_FILES_UPDATE, onUpdateMediaFiles);
+
     /* ============================================================ */
     /* HTTP Handlers */
     /* ============================================================ */
     app.get('/media/:deviceId/:mediaId', getMediaFile);
     app.head('/media/:deviceId/:mediaId', headMediaFile);
-
 
     /* ============================================================ */
     /* Server setup */

@@ -7,4 +7,6 @@ const DefaultController = function($rootScope, $scope, $route, $routeParams, $lo
     $rootScope.goto = function(url) {
         window.location = url;
     }
+
+    $rootScope.modalConfirm = {};
 }

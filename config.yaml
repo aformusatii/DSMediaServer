@@ -1,15 +1,28 @@
 mediaFileServer:
   port: 3000
-
 notificationServer:
   port: 3001
-
 webServer:
   port: 8080
-
 common:
   hostname: 192.168.100.109
   protocol: http
-  getPositionInfoIntervalMillis: 2000
-  eventCooldownTimeMillis: 30000
   scanDelayAfterWakeupTimeMillis: 15000
+  renewUPnPSubscriptionIntervalMillis: 30000
+  getPositionInfoIntervalMillis: 2000
+  watchdogIntervalMillis: 10000
+media:
+  rawInputFolder: C:\Development\repository\IDSSMediaServer\ffmpeg\videos\
+  processedInputFolder: C:\Development\repository\IDSSMediaServer\ffmpeg\videos_processed\
+  vlcExecutable: vlc
+scheduler:
+  enabled: false
+  startTime: 00:00
+  endTime: 05:30
+  weekDays:
+    Tue: false
+    Thu: false
+    Sat: false
+    Mon: true
+    Wed: false
+    Fri: false

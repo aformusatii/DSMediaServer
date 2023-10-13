@@ -1,4 +1,5 @@
 import wol from 'wakeonlan';
+import {EVENTS} from "./constants.js";
 
 export default class WakeOnLanService {
 
@@ -6,7 +7,7 @@ export default class WakeOnLanService {
         this.appContext = appContext;
 
         const _this = this;
-        this.appContext.eventBus.on('WAKE_UP', async function(device) {
+        this.appContext.eventBus.on(EVENTS.WAKE_UP, async function(device) {
             await _this.send(device);
         });
     }
@@ -16,6 +17,9 @@ export default class WakeOnLanService {
             case 'Default':
                 this.sendDefault(device);
                 break;
+            case 'CustomV2':
+                this.sendCustomV2(device);
+                break;
             default:
                 // do not send wakeOnLan
                 break;
@@ -24,7 +28,12 @@ export default class WakeOnLanService {
 
     sendDefault(device) {
         console.log(`Send WakeOnLan for ${device.toString()}`);
-        wol(device.data.mac)
+        wol(device.data.mac);
+    }
+
+    sendCustomV2(device) {
+        console.log(`Send WakeOnLan for ${device.toString()}`);
+        wol(device.data.mac);
     }
 
 }

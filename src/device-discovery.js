@@ -1,5 +1,6 @@
 import Client from 'node-ssdp';
-import arp from '@network-utils/arp-lookup'
+import arp from '@network-utils/arp-lookup';
+import {EVENTS} from "./constants.js";
 
 export default class DeviceDiscovery {
 
@@ -12,7 +13,7 @@ export default class DeviceDiscovery {
             await _this.onReply(headers, statusCode, rinfo);
         });
 
-        this.appContext.eventBus.on('SSPD_SCAN_START', async function() {
+        this.appContext.eventBus.on(EVENTS.SSPD_SCAN_START, async function() {
             _this.scan();
         });
     }
@@ -36,7 +37,7 @@ export default class DeviceDiscovery {
             usn: headers.USN
         }
 
-        this.appContext.eventBus.emit('SSPD_REPLY', reply);
+        this.appContext.eventBus.emit(EVENTS.SSPD_REPLY, reply);
     }
 
 }

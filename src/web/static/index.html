@@ -13,13 +13,16 @@
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <!-- ********* AngularJS ********* -->
     <script src="//code.angularjs.org/1.7.7/angular.min.js"></script>
     <script src="//code.angularjs.org/1.7.7/angular-route.js"></script>
     <script src="//code.angularjs.org/1.7.7/angular-sanitize.js"></script>
+
+    <!-- ********* jQuery Ajax File Uploader Widget ********* -->
+    <link href="css/jquery.dm-uploader.min.css" rel="stylesheet">
+    <script src="js/ext/jquery.dm-uploader.min.js"></script>
 
     <!--
         Microsoft Fabric UI Core's CDN
@@ -31,53 +34,83 @@
     <!-- Notify JS -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js" type="text/javascript" charset="utf-8"></script>
 
-    <!-- Local -->
+    <!-- Ace Editor -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.30.0/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.30.0/mode-yaml.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.30.0/keybinding-vim.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.30.0/keybinding-emacs.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.30.0/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.30.0/ext-modelist.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- Local Cascading Style Sheets -->
     <link rel="stylesheet" href="css/default.css?v=1.0">
+
+    <!-- Local JavaScript -->
+    <script src="js/global.js?v=0.0.1" type="text/javascript"></script>
 
     <script src="js/ctrl/DefaultController.js?v=0.0.1" type="text/javascript"></script>
     <script src="js/ctrl/TvListController.js?v=0.0.1" type="text/javascript"></script>
     <script src="js/ctrl/VideoFilesController.js?v=0.0.1" type="text/javascript"></script>
     <script src="js/ctrl/SettingsController.js?v=0.0.1" type="text/javascript"></script>
 
-    <script src="js/global.js?v=0.0.1" type="text/javascript"></script>
     <script src="js/angular.js?v=0.0.1" type="text/javascript"></script>
+
+    <!-- Components -->
+    <!-- File Uploader -->
+    <link rel="stylesheet" href="js/components/file-uploader/file-uploader.css?v=1.0">
+    <script src="js/components/file-uploader/file-uploader.js?v=0.0.1" type="text/javascript"></script>
+
+    <!-- Edit Tv Modal -->
+    <script src="js/components/edit-tv-modal/edit-tv-modal.js?v=0.0.1" type="text/javascript"></script>
+
+    <!-- Scheduler Modal -->
+    <script src="js/components/scheduler-modal/scheduler-modal.js?v=0.0.1" type="text/javascript"></script>
+
+    <!-- Confirm Modal -->
+    <script src="js/components/confirmation-modal/confirmation-modal.js?v=0.0.1" type="text/javascript"></script>
+
+    <!-- Code Editor -->
+    <script src="js/components/code-editor/code-editor.js?v=0.0.1" type="text/javascript"></script>
 
 </head>
 
 <body ng-controller="DefaultController">
 
-<main>
-    <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark col-md-3 col-lg-2">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <i class="bi-cast" style="font-size: 2rem; color: cornflowerblue;margin-right: 10px;margin-bottom: -3px;"></i>
-            <span class="fs-4">DS Media Server</span>
-        </a>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-                <a href="#!/tvlist" class="nav-link text-white" ng-class="{'active': activeMenu === 'tvlist'}">
-                    <i class="bi bi-tv"></i>&nbsp;
-                    TV Control
-                </a>
-            </li>
-            <li>
-                <a href="#!/videofiles" class="nav-link text-white" ng-class="{'active': activeMenu === 'videofiles'}">
-                    <i class="bi bi-file-earmark-play"></i>&nbsp;
-                    Videos
-                </a>
-            </li>
-            <li>
-                <a href="#!/settings" class="nav-link text-white" ng-class="{'active': activeMenu === 'settings'}">
-                    <i class="bi bi-gear"></i>&nbsp;
-                    Settings
-                </a>
-            </li>
-        </ul>
-    </div>
-    <!-- Main Content --->
-    <div id="content" class="col-md-9 col-lg-10 content-box" ng-view></div>
-</main>
+    <main>
+        <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark col-md-3 col-lg-2">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <i class="bi-cast" style="font-size: 2rem; color: cornflowerblue;margin-right: 10px;margin-bottom: -3px;"></i>
+                <span class="fs-4">DS Media Server</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="#!/tvlist" class="nav-link text-white" ng-class="{'active': activeMenu === 'tvlist'}">
+                        <i class="bi bi-tv"></i>&nbsp;
+                        TV Control
+                    </a>
+                </li>
+                <li>
+                    <a href="#!/videofiles" class="nav-link text-white" ng-class="{'active': activeMenu === 'videofiles'}">
+                        <i class="bi bi-file-earmark-play"></i>&nbsp;
+                        Videos
+                    </a>
+                </li>
+                <li>
+                    <a href="#!/settings" class="nav-link text-white" ng-class="{'active': activeMenu === 'settings'}">
+                        <i class="bi bi-gear"></i>&nbsp;
+                        Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- Main Content --->
+        <div id="content" class="col-md-9 col-lg-10 content-box" ng-view></div>
+    </main>
 
+    <confirmation-modal controller="modalConfirm"></confirmation-modal>
 
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,6 +1,7 @@
-import CONFIG from './config.cjs'
+import {CONFIG} from './configuration.js';
 import express from 'express';
 import {parseNotify} from './upnp-xml-parser.js';
+import {EVENTS} from "./constants.js";
 
 const app = express();
 let appContext = null;
@@ -9,7 +10,7 @@ app.use(express.raw({type: '*/*'}));
 
 app.all('/notify/:deviceKey', async function (req, res) {
     // console.log('NOTIFY: ', req.params.deviceKey, req.headers, req.body.toString());
-    appContext.eventBus.emit('UPNP_NOTIFICATION', {
+    appContext.eventBus.emit(EVENTS.UPNP_NOTIFICATION, {
         deviceKey: req.params.deviceKey,
         headers: req.headers,
         payload: parseNotify(String(req.body))

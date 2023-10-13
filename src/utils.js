@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 export const isSet = function(value) {
     return (value !== null) && (typeof value) !== 'undefined';
 }
@@ -65,5 +68,80 @@ export const normalizeMAC = function(mac) {
 export const copyProperties = function(sourceObj, destinationObj) {
     Object.keys(sourceObj).forEach((key, index) => {
         destinationObj[key] = sourceObj[key];
+    });
+}
+
+export const extractTimeout = function(timeoutStr) {
+    if (isSet(timeoutStr)) {
+        const parts = timeoutStr.split('-');
+        if (parts.length === 2 && parts[0] === 'Second') {
+            const numberOfSeconds = parseInt(parts[1], 10);
+
+            if (!isNaN(numberOfSeconds)) {
+                return numberOfSeconds;
+            }
+        }
+    }
+
+    throw new Error(`Can't extract number of seconds from [${timeoutStr}]`);
+
+    return -1;
+}
+
+export const setAsyncInterval = function(jobName, callback, intervalMillis, ...args) {
+
+    const jobContext = {running: false};
+
+    const timerRef = setInterval(function(...args) {
+        (async function() {
+
+            if (jobContext.running) {
+                console.log(`Job [${jobName}] already running, skip`);
+                return;
+            }
+
+            jobContext.running = true;
+
+            try {
+                await callback(...args);
+            } catch (ex) {
+                console.log(`Exception caught during recurring job [${jobName}]:`, ex);
+            } finally {
+                jobContext.running = false;
+            }
+        })();
+    }, intervalMillis, ...args);
+
+    return timerRef;
+}
+
+export const objToStr = function(obj) {
+    return JSON.stringify(obj)
+}
+
+export const deleteFileAsync = function(filePath) {
+    return new Promise((resolve, reject) => {
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
+export const copyFileAsync = function(sourceFilePath, targetDirectory) {
+    return new Promise((resolve, reject) => {
+        const targetFileName = path.basename(sourceFilePath);
+        const targetFilePath = path.join(targetDirectory, targetFileName);
+
+        fs.copyFile(sourceFilePath, targetFilePath, (err) => {
+            if (err) {
+                resolve(err);
+            } else {
+                resolve();
+            }
+        });
     });
 }

@@ -28,7 +28,7 @@
         "eventSubURL": "http://192.168.100.102:2869/upnphost/udhisapi.dll?event=uuid:f6b89a1e-06b4-4fbf-99fa-70ca132fe793+urn:upnp-org:serviceId:AVTransport"
       },
       "subscription": {
-        "SID": "uuid:82175e11-a449-498e-8a7a-7437d3e00303"
+        "SID": "uuid:9103ba4e-64ed-425e-8f6a-ee457d974a67"
       },
       "positionInfo": {
         "Track": "1",
@@ -40,7 +40,7 @@
           "value": "http://192.168.100.109:3000/media/18-56-80-25-05-99/media.mpg"
         },
         "TrackURI": "http://192.168.100.109:3000/media/18-56-80-25-05-99/media.mpg",
-        "RelTime": "0:00:01",
+        "RelTime": "0:00:00",
         "AbsTime": "NOT_IMPLEMENTED",
         "RelCount": "-1",
         "AbsCount": "-1"
@@ -65,7 +65,7 @@
           },
           "value": "http://192.168.100.109:3000/media/18-56-80-25-05-99/media.mpg"
         },
-        "PlaybackStorageMedium": "HDD",
+        "PlaybackStorageMedium": "NETWORK",
         "RecordStorageMedium": "NOT_IMPLEMENTED",
         "PossiblePlaybackStorageMedia": "NONE,NETWORK,UNKNOWN,HDD,CD-DA,DVD-VIDEO",
         "PossibleRecordStorageMedia": "NOT_IMPLEMENTED",
@@ -78,13 +78,13 @@
         "AbsoluteTimePosition": "NOT_IMPLEMENTED",
         "RelativeCounterPosition": "-1",
         "AbsoluteCounterPosition": "-1",
-        "CurrentTransportActions": "Pause, Stop",
+        "CurrentTransportActions": "Play",
         "TransportState": "PLAYING"
       },
       "selected": true,
       "status": "STOPPED",
-      "connectionState": "CONNECTED",
-      "playbackState": "PLAYING",
+      "connectionState": "DISCONNECTED",
+      "playbackState": "STOPPED",
       "connectionStatus": "CONNECTED"
     }
   },
@@ -94,7 +94,7 @@
       "key": "64-95-6c-15-21-40",
       "mac": "64:95:6c:15:21:40",
       "ip": "192.168.100.229",
-      "location": "http://192.168.100.229:1053/",
+      "location": "http://192.168.100.229:1404/",
       "deviceType": "urn:schemas-upnp-org:device:MediaRenderer:1",
       "friendlyName": "[LG] webOS TV UM7100PLA",
       "manufacturer": "LG Electronics.",
@@ -110,18 +110,20 @@
       "lge:X_LG_DLNA_DOC": "1.0",
       "dlna:X_DLNADOC": "DMR-1.50",
       "avTransport": {
-        "controlURL": "http://192.168.100.229:1053/AVTransport/e7495d7b-4905-7b19-126b-c9e76509bcb9/control.xml",
-        "eventSubURL": "http://192.168.100.229:1053/AVTransport/e7495d7b-4905-7b19-126b-c9e76509bcb9/event.xml"
+        "controlURL": "http://192.168.100.229:1404/AVTransport/e7495d7b-4905-7b19-126b-c9e76509bcb9/control.xml",
+        "eventSubURL": "http://192.168.100.229:1404/AVTransport/e7495d7b-4905-7b19-126b-c9e76509bcb9/event.xml"
       },
       "renderingControl": {
-        "controlURL": "http://192.168.100.229:1053/RenderingControl/e7495d7b-4905-7b19-126b-c9e76509bcb9/control.xml",
-        "eventSubURL": "http://192.168.100.229:1053/RenderingControl/e7495d7b-4905-7b19-126b-c9e76509bcb9/event.xml"
+        "controlURL": "http://192.168.100.229:1404/RenderingControl/e7495d7b-4905-7b19-126b-c9e76509bcb9/control.xml",
+        "eventSubURL": "http://192.168.100.229:1404/RenderingControl/e7495d7b-4905-7b19-126b-c9e76509bcb9/event.xml"
       },
-      "subscription": null,
+      "subscription": {
+        "SID": "uuid:ab0e28ce-2b2f-37ac-8884-5b04c35d9423"
+      },
       "notification": {
         "CurrentMediaDuration": "00:00:00",
-        "TransportState": "PLAYING",
-        "CurrentTransportActions": "Play,Stop,Pause,Seek,X_DLNA_SeekTime,X_DLNA_PS=1/2\\,4\\,-1/2\\,-2\\,-4",
+        "TransportState": "STOPPED",
+        "CurrentTransportActions": "Play,Stop,Seek,X_DLNA_SeekTime,X_DLNA_PS=1/2\\,4\\,-1/2\\,-2\\,-4",
         "TransportStatus": "OK",
         "PlaybackStorageMedium": "NETWORK",
         "RecordStorageMedium": "NOT_IMPLEMENTED",
@@ -136,15 +138,15 @@
           "title": {
             "_text": "video1"
           },
-          "value": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/media.mpg"
+          "value": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg"
         },
-        "CurrentTrackURI": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/media.mpg",
-        "AVTransportURI": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/media.mpg",
+        "CurrentTrackURI": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg",
+        "AVTransportURI": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg",
         "AVTransportURIMetaData": {
           "title": {
             "_text": "video1"
           },
-          "value": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/media.mpg"
+          "value": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg"
         }
       },
       "positionInfo": {
@@ -154,17 +156,17 @@
           "title": {
             "_text": "video1"
           },
-          "value": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/media.mpg"
+          "value": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg"
         },
-        "TrackURI": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/media.mpg",
-        "RelTime": "00:00:02",
+        "TrackURI": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg",
+        "RelTime": "00:00:01",
         "AbsTime": "NOT_IMPLEMENTED",
         "RelCount": "-1",
         "AbsCount": "0"
       },
-      "selected": false,
+      "selected": true,
       "status": "STOPPED",
-      "connectionState": "DISCONNECTED",
+      "connectionState": "CONNECTED",
       "playbackState": "STOPPED",
       "connectionStatus": "DISCONNECTED"
     }
