@@ -5,6 +5,7 @@ import ChildProcess from "./child-process.js";
 import {COMMANDS} from "./commands.js";
 import {EVENTS} from "./constants.js";
 import {copyFileAsync, deleteFileAsync, objToStr} from "./utils.js";
+import {TranscodersMap} from "./transcoders.js";
 
 export default class MediaManager {
 
@@ -20,7 +21,11 @@ export default class MediaManager {
         for (const mediaFile of mediaFiles) {
             if (mediaFile.selected) {
                 console.log('Copy file.', objToStr(mediaFile));
-                await copyFileAsync(mediaFile.absolutePath, CONFIG.media.processedInputFolder);
+                try {
+                    await copyFileAsync(mediaFile.absolutePath, CONFIG.media.processedInputFolder);
+                } catch (exception) {
+                    console.log('Exception while copying file.', exception);
+                }
             }
         }
     }
@@ -29,30 +34,32 @@ export default class MediaManager {
         for (const mediaFile of mediaFiles) {
             if (mediaFile.selected) {
                 console.log('Delete file.', objToStr(mediaFile));
-                await deleteFileAsync(mediaFile.absolutePath);
+                try {
+                    await deleteFileAsync(mediaFile.absolutePath);
+                } catch (exception) {
+                    console.log('Exception while deleting file.', exception);
+                }
             }
         }
     }
 
-    async convert(mediaFiles) {
-        let cmd = COMMANDS.CONCAT_VIDEO_V1;
-        cmd = cmd.replaceAll('[vlc]', CONFIG.media.vlcExecutable);
-        cmd = cmd.replaceAll('[output_folder]', CONFIG.media.processedInputFolder);
-
-        let files = '';
-        mediaFiles.forEach(mediaFile => {
-            if (mediaFile.selected) {
-                files = `"${mediaFile.absolutePath}" ${files}`;
-            }
-        });
-
-        cmd = cmd.replaceAll('[input_files]', files);
-        console.log('cmd', cmd);
+    async transcode(mediaFiles, transcoderId) {
+        const transcoder = TranscodersMap[transcoderId];
+        let commands = transcoder.prepareCommands(mediaFiles, transcoder);
 
         try {
-            await this.childProcess.execute(cmd);
+            for (const command of commands) {
+                await this.childProcess.execute(command);
+            }
+            return {
+                ok: true
+            };
         } catch(exception) {
             console.log('Exception while converting video', exception);
+            return {
+                ok: false,
+                exception: exception
+            };
         }
     }
 

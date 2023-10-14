@@ -12,8 +12,13 @@ const VideoFilesController = function($rootScope, $scope, $route, $routeParams, 
 
     loadVideos($scope, $http);
 
-    $scope.convertMediaFiles = function() {
-        sendGenericAction($scope, $http, $scope.videoData.rawInputFiles, 'convert');
+    $scope.modalVideoTranscoder = {}
+    $scope.transcodeMediaFiles = function() {
+        $scope.modalVideoTranscoder.open($scope.videoData.rawInputFiles.filter(mediaFile => mediaFile.selected));
+    }
+
+    $scope.modalVideoTranscoder.done = function () {
+        loadVideos($scope, $http);
     }
 
     $scope.copyMediaFiles = function() {
@@ -78,7 +83,7 @@ const sendGenericAction = function($scope, $http, mediaFiles, action) {
         url: `/videos/do`,
         data: {
             action: action,
-            mediaFiles: mediaFiles
+            mediaFiles: mediaFiles.filter(mediaFile => mediaFile.selected)
         }
     }).then(function successCallback(response) {
         if (response.data.ok) {

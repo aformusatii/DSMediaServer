@@ -3,6 +3,7 @@ import express from 'express';
 import path from 'path';
 import {fileURLToPath} from 'url';
 import multer from 'multer';
+import {Transcoders} from "./transcoders.js";
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -95,15 +96,21 @@ const videoFilesExecuteAction = async function(req, res) {
         case 'copy':
             await appContext.mediaManager.copy(req.body.mediaFiles);
             break;
-
-        case 'convert':
-            await appContext.mediaManager.convert(req.body.mediaFiles);
-            break;
     }
 
     res.json({
         ok: true
     });
+}
+
+const getTranscoders = async function(req, res) {
+    res.json(Transcoders);
+}
+
+const transcodeVideoFiles = async function(req, res) {
+    const result = await appContext.mediaManager.transcode(req.body.mediaFiles, req.body.transcoderId);
+
+    res.json(result);
 }
 
 const uploadVideoFile = async function(req, res) {
@@ -181,6 +188,9 @@ export function setupServer(_appContext) {
 
     app.get('/configuration', getConfiguration);
     app.post('/configuration', saveConfiguration);
+
+    app.get('/transcoders', getTranscoders);
+    app.post('/videos/transcode', transcodeVideoFiles);
 
     /* ============================================================ */
     /* Server setup */

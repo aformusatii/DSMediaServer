@@ -20,9 +20,10 @@ scheduler:
   startTime: 00:00
   endTime: 05:30
   weekDays:
-    Tue: false
-    Thu: false
+    Tue: true
+    Thu: true
     Sat: false
     Mon: true
-    Wed: false
+    Wed: true
     Fri: false
+    Sun: true

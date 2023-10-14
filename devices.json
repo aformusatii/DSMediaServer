@@ -118,7 +118,7 @@
         "eventSubURL": "http://192.168.100.229:1404/RenderingControl/e7495d7b-4905-7b19-126b-c9e76509bcb9/event.xml"
       },
       "subscription": {
-        "SID": "uuid:ab0e28ce-2b2f-37ac-8884-5b04c35d9423"
+        "SID": "uuid:954d2bb9-2eea-fefd-1974-0a70eb64e417"
       },
       "notification": {
         "CurrentMediaDuration": "00:00:00",
@@ -159,7 +159,7 @@
           "value": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg"
         },
         "TrackURI": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg",
-        "RelTime": "00:00:01",
+        "RelTime": "00:00:02",
         "AbsTime": "NOT_IMPLEMENTED",
         "RelCount": "-1",
         "AbsCount": "0"

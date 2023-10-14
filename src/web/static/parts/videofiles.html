@@ -5,7 +5,7 @@
         <div class="top-menu-box">
             <button type="button" class="btn btn-primary" ng-click="loadVideos()">Refresh</button>
             <button type="button" class="btn btn-success" ng-click="copyMediaFiles()" ng-disabled="!anyRawFilesSelected">Copy</button>
-            <button type="button" class="btn btn-success" ng-click="convertMediaFiles()" ng-disabled="!anyRawFilesSelected">Combine</button>
+            <button type="button" class="btn btn-success" ng-click="transcodeMediaFiles()" ng-disabled="!anyRawFilesSelected">Transcode</button>
             <button type="button" class="btn btn-danger" ng-click="deleteRawMediaFiles()" ng-disabled="!anyRawFilesSelected">Delete</button>
         </div>
         <hr>
@@ -54,5 +54,7 @@
         </table>
     </div>
     <div class="clrfix"></div>
+
+    <video-transcoder-modal controller="modalVideoTranscoder"></video-transcoder-modal>
 
 </div>

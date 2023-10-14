@@ -1,0 +1,63 @@
+<div class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Video Transcoder</h5>
+                <div class="spinner-border text-primary"
+                     role="status"
+                     style="margin-left: 10px"
+                     ng-if="inProgress">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item"
+                        role="presentation"
+                        ng-repeat="transcoder in transcoders track by $index">
+                        <button class="nav-link"
+                                ng-class="{'active': transcoder.selected}"
+                                id="{{transcoder.id}}-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#{{transcoder.id}}"
+                                type="button"
+                                role="tab"
+                                aria-controls="{{transcoder.id}}"
+                                aria-selected="{{transcoder.selected}}"
+                                ng-click="selectTranscoder(transcoder.id);">{{transcoder.label}}</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div ng-repeat="transcoder in transcoders track by $index"
+                         class="tab-pane fade"
+                         ng-class="{'show active': transcoder.selected}"
+                         id="{{transcoder.id}}"
+                         role="tabpanel"
+                         aria-labelledby="{{transcoder.id}}-tab">
+                        <b>Files:</b>
+                        <div ng-repeat="mediaFile in mediaFiles track by $index">
+                            {{mediaFile.name}}
+                        </div>
+                        <b>Command:</b>
+                        <div class="word-break">
+                            {{transcoder.command}}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="startTranscoding()" ng-disabled="inProgress">
+                    <span ng-if="inProgress">Transcoding in progress...</span>
+                    <span ng-if="!inProgress">Transcode</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -7,6 +7,7 @@ export default class ChildProcess {
     }
 
     execute(command) {
+        console.log('Execute command: ', command);
         return new Promise((resolve, reject) => {
             exec(command, (error, stdout, stderr) => {
                 if (error) {
@@ -14,12 +15,7 @@ export default class ChildProcess {
                     return;
                 }
 
-                if (stderr) {
-                    reject(stderr);
-                    return;
-                }
-
-                resolve(stdout);
+                resolve(stdout + stderr);
             });
         });
     }

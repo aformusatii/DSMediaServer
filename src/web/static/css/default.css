@@ -19,10 +19,6 @@ main {
     padding: 5px;
 }
 
-.top-menu-box {
-    margin-top: 11px;
-}
-
 .files-in-box, .files-out-box {
     width: 50%;
     float: left;

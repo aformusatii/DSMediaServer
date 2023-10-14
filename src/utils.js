@@ -145,3 +145,9 @@ export const copyFileAsync = function(sourceFilePath, targetDirectory) {
         });
     });
 }
+
+export const extractFileName = function(absolutePath) {
+    const filename = path.basename(absolutePath);
+    const { name } = path.parse(filename);
+    return name;
+}
