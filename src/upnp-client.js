@@ -1,5 +1,5 @@
 import HttpCustomClient from './http-custom-client.js';
-import {copyProperties, extractBaseUrl, extractTimeout, isSet, objToStr} from "./utils.js";
+import {copyProperties, extractBaseUrl, extractTimeout, isSet, objToStr, sleepAsync} from "./utils.js";
 import {GetPositionInfo, GetTransportInfo, SetAVTransportURI, StartPlayback, StopPlayback} from './upnp-requests.js';
 import got from 'got';
 import {parseDeviceInfo, parseGetPositionInfoResponse, parseGetTransportInfoResponse} from './upnp-xml-parser.js';
@@ -63,7 +63,7 @@ export default class UpnpClient {
     }
 
     async startPlayback(controlURL) {
-        const reply = await this._soapCall(controlURL, StartPlayback,'"urn:schemas-upnp-org:service:AVTransport:1#Play"');
+        const reply = await this._soapCall(controlURL, StartPlayback,'"urn:schemas-upnp-org:service:AVTransport:1#Play"', 3);
         const result = {
             ok: reply.statusCode === 200
         };
@@ -80,30 +80,51 @@ export default class UpnpClient {
 
     async setAVTransportURI(controlURL, sourceMediaUrl) {
         const reqBody = SetAVTransportURI.replaceAll('[source_media_url]', sourceMediaUrl);
-        const reply = await this._soapCall(controlURL, reqBody,'"urn:schemas-upnp-org:service:AVTransport:1#SetAVTransportURI"');
+
+        const reply = await this._soapCall(controlURL, reqBody,'"urn:schemas-upnp-org:service:AVTransport:1#SetAVTransportURI"', 3);
         const result = {
             ok: reply.statusCode === 200
         };
         return result;
     }
 
-    async _soapCall(url, reqBody, soapAction) {
+    async _soapCall(url, reqBody, soapAction, numberOfRetries) {
+
+        const headers = {
+            'User-Agent': 'DLNA Controller',
+            'Content-Type': 'text/xml; charset="utf-8"',
+            'SOAPAction': soapAction,
+            'Accept-Encoding': 'identity',
+            'Connection': 'close'
+        }
+
+        const timeouts = {
+            connect: 2000,
+            response: 5000
+        }
+
         try {
-            const reply = await got.post(url, {
-                body: reqBody,
-                headers: {
-                    'User-Agent': 'DLNA Controller',
-                    'Content-Type': 'text/xml; charset="utf-8"',
-                    'SOAPAction': soapAction,
-                    'Accept-Encoding': 'identity',
-                    'Connection': 'close'
-                },
-                throwHttpErrors: false,
-                timeout: {
-                    connect: 2000,
-                    response: 5000
+            let reply = null;
+            let retry = false;
+            let retryCounter = 0;
+
+            do {
+                reply = await got.post(url, {
+                    body: reqBody,
+                    headers: headers,
+                    throwHttpErrors: false,
+                    timeout: timeouts
+                });
+
+                if (isSet(numberOfRetries)) {
+                    retry = (reply.statusCode > 400) && (retryCounter < numberOfRetries);
+                    retryCounter++;
+                    if (retry) {
+                        console.log(`Unexpected status code ${reply.statusCode} received for ${soapAction} operation. Retry!`);
+                        await sleepAsync(500);
+                    }
                 }
-            });
+            } while(retry);
 
             if (reply.statusCode > 399) {
                 // something went wrong :(

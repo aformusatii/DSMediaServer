@@ -75,6 +75,7 @@ export default class DeviceManager {
             }
 
             device.disableTemporaryActivity(ACTIVITY.SSDP, 5000);
+            device.updateLastActivityTime();
 
             if (device.hasOneOfConnectionStates(CONNECTION_STATE.CONNECTING, CONNECTION_STATE.CONNECTED)) {
                 // connecting or already connected, skip it
@@ -118,7 +119,7 @@ export default class DeviceManager {
     async onAVTransportEvent(message) {
         const device = this.devicesMap[message.deviceKey];
         copyProperties(message.payload, device.data.notification);
-        device.updateLastActivityTime(ACTIVITY.NOTIFY_EVENT);
+        device.updateLastActivityTime();
 
         console.log(device.toString(), `NOTIFY[TransportState->${message.payload.TransportState}, TransportStatus->${message.payload.TransportStatus}, CurrentTransportActions->${message.payload.CurrentTransportActions}]`);
         //console.log('NOTIFICATION: ', message.payload);
@@ -176,6 +177,7 @@ export default class DeviceManager {
 
     setPlayback(play) {
         this.playbackInProgress = play;
+        const $this = this;
 
         if (play) {
 
@@ -183,6 +185,10 @@ export default class DeviceManager {
             this.executeForEachDevice(async function(device) {
                 if (device.data.selected) {
                     device.resetDisabledActivity(ACTIVITY.SSDP);
+
+                    device.disableTemporaryActivity(ACTIVITY.WATCHDOG, CONFIG.common.scanDelayAfterWakeupTimeMillis + 10000);
+                    // in case the device will not respond now try to periodically wake it up
+                    $this.setupWatchdogJob(device);
                 }
             });
 
@@ -232,7 +238,7 @@ export default class DeviceManager {
             if (positionInfoResponse.ok) {
                 device.data.positionInfo = positionInfoResponse.data;
 
-                device.updateLastActivityTime(ACTIVITY.GET_POSITION_INFO);
+                device.updateLastActivityTime();
                 device.setConnectionState(CONNECTION_STATE.CONNECTED);
                 device.resetConnectionErrorCounter();
                 return;
@@ -282,8 +288,22 @@ export default class DeviceManager {
 
    async onWatchdogCheck(device) {
        const disconnected = device.hasOneOfConnectionStates(CONNECTION_STATE.DISCONNECTED, CONNECTION_STATE.ERROR_STATE);
+       const noActivityForLongPeriodOfTime = device.getElapsedTimeInMillisFromLastActivity() > CONFIG.common.watchdogNoActivityIntervalMillis;
+       const watchdogDisabled = device.isActivityDisabled(ACTIVITY.WATCHDOG);
 
-       if (this.playbackInProgress && device.data.selected && disconnected) {
+       if (!watchdogDisabled
+           && this.playbackInProgress
+           && device.data.selected
+           && (disconnected || noActivityForLongPeriodOfTime)) {
+
+           if (noActivityForLongPeriodOfTime) {
+                console.log(device.toString(), `No activity from this device for ${CONFIG.common.watchdogNoActivityIntervalMillis} ms, try to reset it.`);
+           }
+
+           if (disconnected) {
+               console.log(device.toString(), 'Device disconnected but playback enabled, try to reset it.');
+           }
+
            // enable back the SSDP
            device.resetDisabledActivity(ACTIVITY.SSDP);
 
@@ -343,10 +363,6 @@ export default class DeviceManager {
             clearInterval(device.timerRenewSubscription);
         }
 
-        if (isSet(device.timerWatchdogCheck)) {
-            clearInterval(device.timerWatchdogCheck);
-        }
-
         device.setConnectionState(CONNECTION_STATE.DISCONNECTED);
         device.setPlaybackState(PLAYBACK_STATE.STOPPED);
     }
@@ -379,6 +395,15 @@ export default class DeviceManager {
             await _this.onRenewSubscription(device);
         }, renewSubscriptionTimeout, device);
 
+        this.setupWatchdogJob(device);
+    }
+
+    setupWatchdogJob(device) {
+        if (isSet(device.timerWatchdogCheck)) {
+            clearInterval(device.timerWatchdogCheck);
+        }
+
+        const _this = this;
         device.timerWatchdogCheck = setAsyncInterval('WatchdogCheck', async function(device) {
             await _this.onWatchdogCheck(device);
         }, CONFIG.common.watchdogIntervalMillis, device);

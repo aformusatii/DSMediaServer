@@ -108,7 +108,10 @@ const getTranscoders = async function(req, res) {
 }
 
 const transcodeVideoFiles = async function(req, res) {
-    const result = await appContext.mediaManager.transcode(req.body.mediaFiles, req.body.transcoderId);
+    const result = await appContext.mediaManager.transcode(
+        req.body.mediaFiles,
+        req.body.transcoder.id,
+        req.body.transcoder.parameters);
 
     res.json(result);
 }

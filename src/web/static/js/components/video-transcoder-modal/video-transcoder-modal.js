@@ -24,8 +24,8 @@ THEAPP.component('videoTranscoderModal', {
 
                 $scope.startTranscoding = function() {
                     $scope.inProgress = true;
-                    const transcoder = $scope.transcoders.filter(transcoder => transcoder.selected);
-                    transcodeVideoFiles($scope, $http, $scope.mediaFiles, transcoder[0].id, function() {
+                    const transcoder = $scope.transcoders.filter(transcoder => transcoder.selected)[0];
+                    transcodeVideoFiles($scope, $http, $scope.mediaFiles, transcoder, function() {
                         modal.hide();
                         ctrl.done();
                     });
@@ -54,13 +54,13 @@ const getTranscoders = function($scope, $http, callback) {
     });
 }
 
-const transcodeVideoFiles = function($scope, $http, mediaFiles, transcoderId, callback) {
+const transcodeVideoFiles = function($scope, $http, mediaFiles, transcoder, callback) {
     $http({
         method: 'POST',
         url: `/videos/transcode`,
         data: {
             mediaFiles: mediaFiles,
-            transcoderId: transcoderId
+            transcoder: transcoder,
         }
     }).then(function successCallback(response) {
         if (response.data.ok) {

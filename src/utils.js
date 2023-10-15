@@ -151,3 +151,7 @@ export const extractFileName = function(absolutePath) {
     const { name } = path.parse(filename);
     return name;
 }
+
+export const sleepAsync = function(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+}

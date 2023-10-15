@@ -43,9 +43,9 @@ export default class MediaManager {
         }
     }
 
-    async transcode(mediaFiles, transcoderId) {
+    async transcode(mediaFiles, transcoderId, transcoderParams) {
         const transcoder = TranscodersMap[transcoderId];
-        let commands = transcoder.prepareCommands(mediaFiles, transcoder);
+        let commands = transcoder.prepareCommands(mediaFiles, transcoder, transcoderParams);
 
         try {
             for (const command of commands) {

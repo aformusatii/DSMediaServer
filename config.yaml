@@ -11,6 +11,7 @@ common:
   renewUPnPSubscriptionIntervalMillis: 30000
   getPositionInfoIntervalMillis: 2000
   watchdogIntervalMillis: 10000
+  watchdogNoActivityIntervalMillis: 60000
 media:
   rawInputFolder: C:\Development\repository\IDSSMediaServer\ffmpeg\videos\
   processedInputFolder: C:\Development\repository\IDSSMediaServer\ffmpeg\videos_processed\

@@ -28,7 +28,7 @@
         "eventSubURL": "http://192.168.100.102:2869/upnphost/udhisapi.dll?event=uuid:f6b89a1e-06b4-4fbf-99fa-70ca132fe793+urn:upnp-org:serviceId:AVTransport"
       },
       "subscription": {
-        "SID": "uuid:9103ba4e-64ed-425e-8f6a-ee457d974a67"
+        "SID": "uuid:0c619171-717e-4b64-974c-07726532736e"
       },
       "positionInfo": {
         "Track": "1",
@@ -37,10 +37,10 @@
           "title": {
             "_text": "video1"
           },
-          "value": "http://192.168.100.109:3000/media/18-56-80-25-05-99/media.mpg"
+          "value": "http://192.168.100.109:3000/media/18-56-80-25-05-99/video_0.mpg"
         },
-        "TrackURI": "http://192.168.100.109:3000/media/18-56-80-25-05-99/media.mpg",
-        "RelTime": "0:00:00",
+        "TrackURI": "http://192.168.100.109:3000/media/18-56-80-25-05-99/video_0.mpg",
+        "RelTime": "0:00:51",
         "AbsTime": "NOT_IMPLEMENTED",
         "RelCount": "-1",
         "AbsCount": "-1"
@@ -51,21 +51,21 @@
         "CurrentTrack": "1",
         "CurrentTrackDuration": "00:00:00",
         "CurrentMediaDuration": "00:00:00",
-        "CurrentTrackURI": "http://192.168.100.109:3000/media/18-56-80-25-05-99/media.mpg",
-        "AVTransportURI": "http://192.168.100.109:3000/media/18-56-80-25-05-99/media.mpg",
+        "CurrentTrackURI": "http://192.168.100.109:3000/media/18-56-80-25-05-99/video_0.mpg",
+        "AVTransportURI": "http://192.168.100.109:3000/media/18-56-80-25-05-99/video_0.mpg",
         "CurrentTrackMetaData": {
           "title": {
             "_text": "video1"
           },
-          "value": "http://192.168.100.109:3000/media/18-56-80-25-05-99/media.mpg"
+          "value": "http://192.168.100.109:3000/media/18-56-80-25-05-99/video_0.mpg"
         },
         "AVTransportURIMetaData": {
           "title": {
             "_text": "video1"
           },
-          "value": "http://192.168.100.109:3000/media/18-56-80-25-05-99/media.mpg"
+          "value": "http://192.168.100.109:3000/media/18-56-80-25-05-99/video_0.mpg"
         },
-        "PlaybackStorageMedium": "NETWORK",
+        "PlaybackStorageMedium": "NONE",
         "RecordStorageMedium": "NOT_IMPLEMENTED",
         "PossiblePlaybackStorageMedia": "NONE,NETWORK,UNKNOWN,HDD,CD-DA,DVD-VIDEO",
         "PossibleRecordStorageMedia": "NOT_IMPLEMENTED",
@@ -78,13 +78,13 @@
         "AbsoluteTimePosition": "NOT_IMPLEMENTED",
         "RelativeCounterPosition": "-1",
         "AbsoluteCounterPosition": "-1",
-        "CurrentTransportActions": "Play",
+        "CurrentTransportActions": "Pause, Stop",
         "TransportState": "PLAYING"
       },
       "selected": true,
       "status": "STOPPED",
-      "connectionState": "DISCONNECTED",
-      "playbackState": "STOPPED",
+      "connectionState": "CONNECTED",
+      "playbackState": "PLAYING",
       "connectionStatus": "CONNECTED"
     }
   },
@@ -118,12 +118,12 @@
         "eventSubURL": "http://192.168.100.229:1404/RenderingControl/e7495d7b-4905-7b19-126b-c9e76509bcb9/event.xml"
       },
       "subscription": {
-        "SID": "uuid:954d2bb9-2eea-fefd-1974-0a70eb64e417"
+        "SID": "uuid:a502ab8c-5ceb-eb28-70b1-b0d92a3cb025"
       },
       "notification": {
         "CurrentMediaDuration": "00:00:00",
-        "TransportState": "STOPPED",
-        "CurrentTransportActions": "Play,Stop,Seek,X_DLNA_SeekTime,X_DLNA_PS=1/2\\,4\\,-1/2\\,-2\\,-4",
+        "TransportState": "PLAYING",
+        "CurrentTransportActions": "Play,Stop,Pause,Seek,X_DLNA_SeekTime,X_DLNA_PS=1/2\\,4\\,-1/2\\,-2\\,-4",
         "TransportStatus": "OK",
         "PlaybackStorageMedium": "NETWORK",
         "RecordStorageMedium": "NOT_IMPLEMENTED",
@@ -167,7 +167,7 @@
       "selected": true,
       "status": "STOPPED",
       "connectionState": "CONNECTED",
-      "playbackState": "STOPPED",
+      "playbackState": "PLAYING",
       "connectionStatus": "DISCONNECTED"
     }
   }

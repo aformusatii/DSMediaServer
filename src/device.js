@@ -5,7 +5,7 @@ export default class Device {
 
     constructor(data) {
         this.data = data
-        this.activities = {};
+        this.lastActivityTime = new Date();
         this.disabledActivities = {};
 
         this.playbackState = PLAYBACK_STATE.STOPPED;
@@ -21,12 +21,13 @@ export default class Device {
     }
 
     /* ============================================================================== */
-    updateLastActivityTime(activity) {
-        this.activities[activity] = new Date();
+    updateLastActivityTime() {
+        this.lastActivityTime = new Date();
     }
 
-    getElapsedTimeFromLastActivity(activity) {
-        return this.activities[activity].getTime();
+    getElapsedTimeInMillisFromLastActivity() {
+        const currentTime = new Date();
+        return (currentTime.getTime() - this.lastActivityTime.getTime());
     }
 
     /* ============================================================================== */
