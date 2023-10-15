@@ -7,7 +7,6 @@ WORKDIR /usr/src/app
 
 COPY . .
 RUN npm install
-COPY --chown=node:node .run  .
 
 EXPOSE 3000
 EXPOSE 3001
