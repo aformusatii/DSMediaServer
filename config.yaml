@@ -13,18 +13,18 @@ common:
   watchdogIntervalMillis: 10000
   watchdogNoActivityIntervalMillis: 60000
 media:
-  rawInputFolder: C:\Development\repository\IDSSMediaServer\ffmpeg\videos\
-  processedInputFolder: C:\Development\repository\IDSSMediaServer\ffmpeg\videos_processed\
+  rawInputFolder: media/raw_folder
+  processedInputFolder: media/playback_folder
   vlcExecutable: vlc
 scheduler:
   enabled: false
-  startTime: 00:00
-  endTime: 05:30
+  startTime: 09:00
+  endTime: 18:00
   weekDays:
-    Tue: true
-    Thu: true
-    Sat: false
-    Mon: true
-    Wed: true
+    Mon: false
+    Tue: false
+    Wed: false
+    Thu: false
     Fri: false
-    Sun: true
+    Sat: false
+    Sun: false
