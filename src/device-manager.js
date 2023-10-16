@@ -297,6 +297,9 @@ export default class DeviceManager {
            && device.data.selected
            && (disconnected || noActivityForLongPeriodOfTime)) {
 
+           // to avoid running multiple restart processes
+           device.disableTemporaryActivity(ACTIVITY.WATCHDOG, 60000);
+
            if (noActivityForLongPeriodOfTime) {
                 console.log(device.toString(), `No activity from this device for ${CONFIG.common.watchdogNoActivityIntervalMillis} ms, try to reset it.`);
            }
@@ -307,6 +310,9 @@ export default class DeviceManager {
 
            // enable back the SSDP
            device.resetDisabledActivity(ACTIVITY.SSDP);
+
+           // mark state as ERROR, we will need this to bounce it properly
+           device.setConnectionState(CONNECTION_STATE.ERROR_STATE);
 
            // use our fancy eventBus to start SSPD scan
            this.emitEvent(EVENTS.SSPD_SCAN_START);
