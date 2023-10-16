@@ -121,7 +121,6 @@ export default class DeviceManager {
     async onAVTransportEvent(message) {
         const device = this.devicesMap[message.deviceKey];
         copyProperties(message.payload, device.data.notification);
-        device.updateLastActivityTime();
 
         console.log(device.toString(), `NOTIFY[TransportState->${message.payload.TransportState}, TransportStatus->${message.payload.TransportStatus}, CurrentTransportActions->${message.payload.CurrentTransportActions}]`);
         //console.log('NOTIFICATION: ', message.payload);
@@ -130,6 +129,7 @@ export default class DeviceManager {
             case 'TRANSITIONING':
             case 'PLAYING':
                 device.setPlaybackState(PLAYBACK_STATE.PLAYING);
+                device.updateLastActivityTime();
                 break;
 
             case 'STOPPED':
@@ -240,7 +240,6 @@ export default class DeviceManager {
             if (positionInfoResponse.ok) {
                 device.data.positionInfo = positionInfoResponse.data;
 
-                device.updateLastActivityTime();
                 device.setConnectionState(CONNECTION_STATE.CONNECTED);
                 device.resetConnectionErrorCounter();
                 return;
