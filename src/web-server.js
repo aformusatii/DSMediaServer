@@ -4,10 +4,11 @@ import path from 'path';
 import {fileURLToPath} from 'url';
 import multer from 'multer';
 import {Transcoders} from "./transcoders.js";
+import {resolveToAbsolutePath} from "./utils.js";
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, CONFIG.media.rawInputFolder)
+        cb(null, resolveToAbsolutePath(CONFIG.media.rawInputFolder))
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname)

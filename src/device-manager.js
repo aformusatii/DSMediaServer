@@ -43,6 +43,7 @@ export default class DeviceManager {
         this.saveInProgress = false;
         this.playbackInProgress = false;
         this.upnpClient = new UpnpClient();
+        this.latestMediaFiles = [];
 
         this.restoreDevices();
     }
@@ -76,6 +77,7 @@ export default class DeviceManager {
 
             device.disableTemporaryActivity(ACTIVITY.SSDP, 5000);
             device.updateLastActivityTime();
+            device.setMediaFiles(this.latestMediaFiles);
 
             if (device.hasOneOfConnectionStates(CONNECTION_STATE.CONNECTING, CONNECTION_STATE.CONNECTED)) {
                 // connecting or already connected, skip it
@@ -320,9 +322,10 @@ export default class DeviceManager {
    }
 
    async onMediaFilesUpdate(message) {
+       this.latestMediaFiles = message;
        this.executeForEachDevice(device => {
             device.setMediaFiles(message);
-       })
+       });
    }
 
    async updateDeviceData(deviceKey, data) {

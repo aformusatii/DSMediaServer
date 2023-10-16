@@ -1,7 +1,7 @@
 FROM node:20
 
 RUN apt-get update \
-&& apt-get install -y vlc ffmpeg
+&& apt-get install -y vlc ffmpeg net-tools
 
 WORKDIR /usr/src/app
 

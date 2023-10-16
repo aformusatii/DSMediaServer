@@ -155,3 +155,12 @@ export const extractFileName = function(absolutePath) {
 export const sleepAsync = function(milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
+
+export const resolveToAbsolutePath = function(directoryPath) {
+    const isAbsolute = path.isAbsolute(directoryPath);
+    if (isAbsolute) {
+        return directoryPath;
+    }
+
+    return path.resolve('../', directoryPath);
+}

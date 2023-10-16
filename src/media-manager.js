@@ -2,9 +2,8 @@ import {CONFIG} from './configuration.js';
 import fs from 'fs';
 import path from 'path';
 import ChildProcess from "./child-process.js";
-import {COMMANDS} from "./commands.js";
 import {EVENTS} from "./constants.js";
-import {copyFileAsync, deleteFileAsync, objToStr} from "./utils.js";
+import {copyFileAsync, deleteFileAsync, objToStr, resolveToAbsolutePath} from "./utils.js";
 import {TranscodersMap} from "./transcoders.js";
 
 export default class MediaManager {
@@ -22,7 +21,7 @@ export default class MediaManager {
             if (mediaFile.selected) {
                 console.log('Copy file.', objToStr(mediaFile));
                 try {
-                    await copyFileAsync(mediaFile.absolutePath, CONFIG.media.processedInputFolder);
+                    await copyFileAsync(mediaFile.absolutePath, resolveToAbsolutePath(CONFIG.media.processedInputFolder));
                 } catch (exception) {
                     console.log('Exception while copying file.', exception);
                 }
@@ -83,13 +82,18 @@ export default class MediaManager {
         const outFiles = [];
 
         try {
-            const files = fs.readdirSync(directoryPath);
+            const absoluteDirPath = resolveToAbsolutePath(directoryPath);
+            console.log(`Scan folder [${absoluteDirPath}] for media files.`);
+
+            const files = fs.readdirSync(absoluteDirPath);
 
             files.forEach((fileName) => {
                 const file = {
                     name: fileName,
-                    absolutePath: path.join(directoryPath, fileName)
+                    absolutePath: path.join(absoluteDirPath, fileName)
                 }
+
+                console.log('-> Found media file:', objToStr(file));
 
                 outFiles.push(file);
             });
