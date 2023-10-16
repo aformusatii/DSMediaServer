@@ -1,6 +1,7 @@
 import Client from 'node-ssdp';
 import arp from '@network-utils/arp-lookup';
 import {EVENTS} from "./constants.js";
+import {objToStr} from "./utils.js";
 
 export default class DeviceDiscovery {
 
@@ -25,10 +26,9 @@ export default class DeviceDiscovery {
     async onReply(headers, statusCode, rinfo) {
         //console.log('headers', headers);
         //console.log('statusCode', statusCode);
-        //console.log('rinfo', rinfo);
 
         const deviceMAC = await arp.toMAC(rinfo.address);
-        //console.log('deviceMAC', deviceMAC);
+        console.log('rinfo', objToStr(rinfo), 'deviceMAC', deviceMAC, 'headers', objToStr(headers));
 
         const reply = {
             ip: rinfo.address,
