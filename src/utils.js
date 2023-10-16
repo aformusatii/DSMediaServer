@@ -1,5 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import {fileURLToPath} from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const isSet = function(value) {
     return (value !== null) && (typeof value) !== 'undefined';
@@ -162,5 +166,5 @@ export const resolveToAbsolutePath = function(directoryPath) {
         return directoryPath;
     }
 
-    return path.resolve('../', directoryPath);
+    return path.join(__dirname, '..', directoryPath);
 }
