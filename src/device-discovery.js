@@ -27,7 +27,7 @@ export default class DeviceDiscovery {
         //console.log('headers', headers);
         //console.log('statusCode', statusCode);
 
-        if (headers.USN && headers.USN.usn.includes('AVTransport')) {
+        if (headers.USN && headers.USN.includes('AVTransport')) {
             const deviceMAC = await arp.toMAC(rinfo.address);
             console.log('rinfo', objToStr(rinfo), 'deviceMAC', deviceMAC, 'headers', objToStr(headers));
 
