@@ -5,3 +5,4 @@ sniff/
 test/
 Dockerfile
 package-lock.json
+devices.json
