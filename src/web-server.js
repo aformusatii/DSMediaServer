@@ -4,7 +4,9 @@ import path from 'path';
 import {fileURLToPath} from 'url';
 import multer from 'multer';
 import {Transcoders} from "./transcoders.js";
-import {resolveToAbsolutePath} from "./utils.js";
+import {objToStr, resolveToAbsolutePath} from "./utils.js";
+import ChildProcess from "./child-process.js";
+import arp from '@network-utils/arp-lookup';
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -162,6 +164,17 @@ const saveConfiguration = async function(req, res) {
     });
 }
 
+const performTest1 = async function(req, res) {
+    const process = new ChildProcess();
+    const output = await process.execute('arp -a');
+    res.send(output);
+}
+
+const performTest2 = async function(req, res) {
+    const output = await arp.getTable();
+    res.send(objToStr(output));
+}
+
 export function setupServer(_appContext) {
     /* ============================================================ */
     /* HTTP Handlers */
@@ -195,6 +208,9 @@ export function setupServer(_appContext) {
 
     app.get('/transcoders', getTranscoders);
     app.post('/videos/transcode', transcodeVideoFiles);
+
+    app.get('/test1', performTest1);
+    app.get('/test2', performTest2);
 
     /* ============================================================ */
     /* Server setup */
