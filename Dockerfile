@@ -8,6 +8,10 @@ WORKDIR /usr/src/app
 COPY . .
 RUN npm install
 
+RUN chown -R node:node /usr/src/app
+
+USER node
+
 EXPOSE 3000
 EXPOSE 3001
 EXPOSE 8080
