@@ -1,7 +1,7 @@
 import Client from 'node-ssdp';
 import arp from '@network-utils/arp-lookup';
 import {EVENTS} from "./constants.js";
-import {objToStr} from "./utils.js";
+import {isNotSet, objToStr} from "./utils.js";
 
 export default class DeviceDiscovery {
 
@@ -30,6 +30,11 @@ export default class DeviceDiscovery {
         if (headers.USN && headers.USN.includes('AVTransport')) {
             const deviceMAC = await arp.toMAC(rinfo.address);
             console.log('rinfo', objToStr(rinfo), 'deviceMAC', deviceMAC, 'headers', objToStr(headers));
+
+            if (isNotSet(deviceMAC)) {
+                console.log('Can not identify device map.');
+                return;
+            }
 
             const reply = {
                 ip: rinfo.address,

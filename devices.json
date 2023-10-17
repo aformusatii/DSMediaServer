@@ -1,96 +1,39 @@
 {
-  "18-56-80-25-05-99": {
+  "64-95-6c-15-21-40": {
     "data": {
       "wakeOnLanStrategy": "None",
-      "key": "18-56-80-25-05-99",
-      "mac": "18:56:80:25:05:99",
-      "ip": "192.168.100.102",
-      "location": "http://192.168.100.102:2869/upnphost/udhisapi.dll?content=uuid:f6b89a1e-06b4-4fbf-99fa-70ca132fe793",
-      "deviceType": "urn:schemas-upnp-org:device:MediaRenderer:1",
-      "friendlyName": "User (DESKTOP-N77S5TN : Windows Media Player)",
-      "modelNumber": "12",
-      "modelName": "Windows Media Player",
-      "modelDescription": "Windows Media Player Renderer",
-      "manufacturer": "Microsoft Corporation",
-      "manufacturerURL": "https://www.microsoft.com",
-      "modelURL": "https://go.microsoft.com/fwlink/?LinkId=105927",
-      "serialNumber": "{532356D6-8286-46B1-9114-5E8303252C0A}",
-      "UDN": "uuid:f6b89a1e-06b4-4fbf-99fa-70ca132fe793",
-      "dlna:X_DLNADOC": "DMR-1.50",
-      "microsoft:magicPacketSendSupported": "1",
-      "microsoft:magicPacketWakeSupported": "1",
-      "renderingControl": {
-        "controlURL": "http://192.168.100.102:2869/upnphost/udhisapi.dll?control=uuid:f6b89a1e-06b4-4fbf-99fa-70ca132fe793+urn:upnp-org:serviceId:RenderingControl",
-        "eventSubURL": "http://192.168.100.102:2869/upnphost/udhisapi.dll?event=uuid:f6b89a1e-06b4-4fbf-99fa-70ca132fe793+urn:upnp-org:serviceId:RenderingControl"
-      },
-      "avTransport": {
-        "controlURL": "http://192.168.100.102:2869/upnphost/udhisapi.dll?control=uuid:f6b89a1e-06b4-4fbf-99fa-70ca132fe793+urn:upnp-org:serviceId:AVTransport",
-        "eventSubURL": "http://192.168.100.102:2869/upnphost/udhisapi.dll?event=uuid:f6b89a1e-06b4-4fbf-99fa-70ca132fe793+urn:upnp-org:serviceId:AVTransport"
-      },
-      "subscription": {
-        "SID": "uuid:0c619171-717e-4b64-974c-07726532736e"
-      },
-      "positionInfo": {
-        "Track": "1",
-        "TrackDuration": "00:00:00",
-        "TrackMetaData": {
-          "title": {
-            "_text": "video1"
-          },
-          "value": "http://192.168.100.109:3000/media/18-56-80-25-05-99/video_0.mpg"
-        },
-        "TrackURI": "http://192.168.100.109:3000/media/18-56-80-25-05-99/video_0.mpg",
-        "RelTime": "0:00:51",
-        "AbsTime": "NOT_IMPLEMENTED",
-        "RelCount": "-1",
-        "AbsCount": "-1"
-      },
+      "selected": true,
       "notification": {
+        "TransportState": "STOPPED",
         "TransportStatus": "OK",
-        "NumberOfTracks": "1",
-        "CurrentTrack": "1",
-        "CurrentTrackDuration": "00:00:00",
-        "CurrentMediaDuration": "00:00:00",
-        "CurrentTrackURI": "http://192.168.100.109:3000/media/18-56-80-25-05-99/video_0.mpg",
-        "AVTransportURI": "http://192.168.100.109:3000/media/18-56-80-25-05-99/video_0.mpg",
-        "CurrentTrackMetaData": {
-          "title": {
-            "_text": "video1"
-          },
-          "value": "http://192.168.100.109:3000/media/18-56-80-25-05-99/video_0.mpg"
-        },
-        "AVTransportURIMetaData": {
-          "title": {
-            "_text": "video1"
-          },
-          "value": "http://192.168.100.109:3000/media/18-56-80-25-05-99/video_0.mpg"
-        },
-        "PlaybackStorageMedium": "NONE",
+        "PlaybackStorageMedium": "NETWORK",
         "RecordStorageMedium": "NOT_IMPLEMENTED",
-        "PossiblePlaybackStorageMedia": "NONE,NETWORK,UNKNOWN,HDD,CD-DA,DVD-VIDEO",
-        "PossibleRecordStorageMedia": "NOT_IMPLEMENTED",
         "CurrentPlayMode": "NORMAL",
         "TransportPlaySpeed": "1",
         "RecordMediumWriteStatus": "NOT_IMPLEMENTED",
         "CurrentRecordQualityMode": "NOT_IMPLEMENTED",
-        "PossibleRecordQualityModes": "NOT_IMPLEMENTED",
-        "RelativeTimePosition": "0:00:00",
-        "AbsoluteTimePosition": "NOT_IMPLEMENTED",
-        "RelativeCounterPosition": "-1",
-        "AbsoluteCounterPosition": "-1",
-        "CurrentTransportActions": "Pause, Stop",
-        "TransportState": "PLAYING"
+        "NumberOfTracks": "1",
+        "CurrentTrack": "1",
+        "CurrentTrackDuration": "0:00:00",
+        "CurrentMediaDuration": "0:00:00",
+        "CurrentTrackMetaData": {
+          "title": {
+            "_text": "video1"
+          },
+          "value": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg"
+        },
+        "CurrentTrackURI": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg",
+        "AVTransportURI": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg",
+        "AVTransportURIMetaData": {
+          "title": {
+            "_text": "video1"
+          },
+          "value": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg"
+        },
+        "CurrentTransportActions": "Play,Stop,Seek,X_DLNA_SeekTime,X_DLNA_PS=1/2\\,4\\,-1/2\\,-2\\,-4"
       },
-      "selected": true,
-      "status": "STOPPED",
+      "playbackState": "STOPPED",
       "connectionState": "CONNECTED",
-      "playbackState": "PLAYING",
-      "connectionStatus": "CONNECTED"
-    }
-  },
-  "64-95-6c-15-21-40": {
-    "data": {
-      "wakeOnLanStrategy": "Default",
       "key": "64-95-6c-15-21-40",
       "mac": "64:95:6c:15:21:40",
       "ip": "192.168.100.229",
@@ -118,40 +61,11 @@
         "eventSubURL": "http://192.168.100.229:1404/RenderingControl/e7495d7b-4905-7b19-126b-c9e76509bcb9/event.xml"
       },
       "subscription": {
-        "SID": "uuid:a502ab8c-5ceb-eb28-70b1-b0d92a3cb025"
-      },
-      "notification": {
-        "CurrentMediaDuration": "00:00:00",
-        "TransportState": "PLAYING",
-        "CurrentTransportActions": "Play,Stop,Pause,Seek,X_DLNA_SeekTime,X_DLNA_PS=1/2\\,4\\,-1/2\\,-2\\,-4",
-        "TransportStatus": "OK",
-        "PlaybackStorageMedium": "NETWORK",
-        "RecordStorageMedium": "NOT_IMPLEMENTED",
-        "CurrentPlayMode": "NORMAL",
-        "TransportPlaySpeed": "1",
-        "RecordMediumWriteStatus": "NOT_IMPLEMENTED",
-        "CurrentRecordQualityMode": "NOT_IMPLEMENTED",
-        "NumberOfTracks": "1",
-        "CurrentTrack": "1",
-        "CurrentTrackDuration": "00:00:00",
-        "CurrentTrackMetaData": {
-          "title": {
-            "_text": "video1"
-          },
-          "value": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg"
-        },
-        "CurrentTrackURI": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg",
-        "AVTransportURI": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg",
-        "AVTransportURIMetaData": {
-          "title": {
-            "_text": "video1"
-          },
-          "value": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg"
-        }
+        "SID": "uuid:5993e7cf-0579-9e38-a804-0d4ca7424e19"
       },
       "positionInfo": {
         "Track": "1",
-        "TrackDuration": "00:00:00",
+        "TrackDuration": "0:00:00",
         "TrackMetaData": {
           "title": {
             "_text": "video1"
@@ -159,16 +73,11 @@
           "value": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg"
         },
         "TrackURI": "http://192.168.100.109:3000/media/64-95-6c-15-21-40/video_0.mpg",
-        "RelTime": "00:00:02",
+        "RelTime": "00:00:00",
         "AbsTime": "NOT_IMPLEMENTED",
         "RelCount": "-1",
         "AbsCount": "0"
-      },
-      "selected": true,
-      "status": "STOPPED",
-      "connectionState": "CONNECTED",
-      "playbackState": "PLAYING",
-      "connectionStatus": "DISCONNECTED"
+      }
     }
   }
 }
