@@ -49,72 +49,70 @@ export default class DeviceManager {
     }
 
     async onDiscover(message) {
-        if (message.usn.includes('AVTransport')) {
-            const deviceKey = normalizeMAC(message.mac);
-            let device = null;
-            let addedNew = false;
+        const deviceKey = normalizeMAC(message.mac);
+        let device = null;
+        let addedNew = false;
 
-            if (isNotSet(this.devicesMap[deviceKey])) {
-                device = new Device({wakeOnLanStrategy: 'None', selected: true, notification: {}});
-                this.devicesMap[deviceKey] = device;
-                addedNew = true;
-            } else {
-                // Update IP and location
-                device = this.devicesMap[deviceKey];
-            }
+        if (isNotSet(this.devicesMap[deviceKey])) {
+            device = new Device({wakeOnLanStrategy: 'None', selected: true, notification: {}});
+            this.devicesMap[deviceKey] = device;
+            addedNew = true;
+        } else {
+            // Update IP and location
+            device = this.devicesMap[deviceKey];
+        }
 
-            if (!device.data.selected) {
-                // not selected from UI, skip it
-                console.log(device.toString(), 'onDiscover', 'Skip due to device not being selected');
-                return;
-            }
+        if (!device.data.selected) {
+            // not selected from UI, skip it
+            console.log(device.toString(), 'onDiscover', 'Skip due to device not being selected');
+            return;
+        }
 
-            if (device.isActivityDisabled(ACTIVITY.SSDP)) {
-                // too fast bro, cool down a bit...
-                console.log(device.toString(), 'onDiscover', 'Skip due to disabled activity.');
-                return;
-            }
+        if (device.isActivityDisabled(ACTIVITY.SSDP)) {
+            // too fast bro, cool down a bit...
+            console.log(device.toString(), 'onDiscover', 'Skip due to disabled activity.');
+            return;
+        }
 
-            device.disableTemporaryActivity(ACTIVITY.SSDP, 5000);
-            device.updateLastActivityTime();
-            device.setMediaFiles(this.latestMediaFiles);
+        device.disableTemporaryActivity(ACTIVITY.SSDP, 5000);
+        device.updateLastActivityTime();
+        device.setMediaFiles(this.latestMediaFiles);
 
-            if (device.hasOneOfConnectionStates(CONNECTION_STATE.CONNECTING, CONNECTION_STATE.CONNECTED)) {
-                // connecting or already connected, skip it
-                console.log(device.toString(), 'onDiscover', 'Skip as device already connected or trying to establish it.');
+        if (device.hasOneOfConnectionStates(CONNECTION_STATE.CONNECTING, CONNECTION_STATE.CONNECTED)) {
+            // connecting or already connected, skip it
+            console.log(device.toString(), 'onDiscover', 'Skip as device already connected or trying to establish it.');
 
-                if (this.playbackInProgress && device.hasPlaybackState(PLAYBACK_STATE.STOPPED)) {
-                    console.log(device.toString(), 'onDiscover', 'Start playback');
-                    await this.playNextMedia(device);
-                }
-
-                return;
-            }
-
-            console.log(device.toString(), 'onDiscover', 'Received SSDP reply');
-
-            device.data.key = deviceKey;
-            device.data.mac = message.mac;
-            device.data.ip = message.ip;
-            device.data.location = message.location;
-
-            await this.upnpClient.fetchDeviceInformation(device);
-            await this.reconnectToDevice(device);
-
-            //const positionInfo = await this.upnpClient.getPositionInfo(device.data.avTransport.controlURL);
-            //console.log('positionInfo', positionInfo, device.toString());
-
-            this.saveDevicesWithDelay();
-
-            if (this.playbackInProgress) {
+            if (this.playbackInProgress && device.hasPlaybackState(PLAYBACK_STATE.STOPPED)) {
                 console.log(device.toString(), 'onDiscover', 'Start playback');
-                await this.upnpClient.stopPlayback(device.data.avTransport.controlURL);
                 await this.playNextMedia(device);
             }
 
-            if (addedNew) {
-                console.log('Added new device: ', device.toString());
-            }
+            return;
+        }
+
+        console.log(device.toString(), 'onDiscover', 'Received SSDP reply');
+
+        device.data.key = deviceKey;
+        device.data.mac = message.mac;
+        device.data.ip = message.ip;
+        device.data.location = message.location;
+
+        await this.upnpClient.fetchDeviceInformation(device);
+        await this.reconnectToDevice(device);
+
+        //const positionInfo = await this.upnpClient.getPositionInfo(device.data.avTransport.controlURL);
+        //console.log('positionInfo', positionInfo, device.toString());
+
+        this.saveDevicesWithDelay();
+
+        if (this.playbackInProgress) {
+            console.log(device.toString(), 'onDiscover', 'Start playback');
+            await this.upnpClient.stopPlayback(device.data.avTransport.controlURL);
+            await this.playNextMedia(device);
+        }
+
+        if (addedNew) {
+            console.log('Added new device: ', device.toString());
         }
     }
 

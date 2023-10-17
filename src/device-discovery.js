@@ -27,17 +27,19 @@ export default class DeviceDiscovery {
         //console.log('headers', headers);
         //console.log('statusCode', statusCode);
 
-        const deviceMAC = await arp.toMAC(rinfo.address);
-        console.log('rinfo', objToStr(rinfo), 'deviceMAC', deviceMAC, 'headers', objToStr(headers));
+        if (headers.USN && headers.USN.usn.includes('AVTransport')) {
+            const deviceMAC = await arp.toMAC(rinfo.address);
+            console.log('rinfo', objToStr(rinfo), 'deviceMAC', deviceMAC, 'headers', objToStr(headers));
 
-        const reply = {
-            ip: rinfo.address,
-            location: headers.LOCATION,
-            mac: deviceMAC,
-            usn: headers.USN
+            const reply = {
+                ip: rinfo.address,
+                location: headers.LOCATION,
+                mac: deviceMAC,
+                usn: headers.USN
+            }
+
+            this.appContext.eventBus.emit(EVENTS.SSPD_REPLY, reply);
         }
-
-        this.appContext.eventBus.emit(EVENTS.SSPD_REPLY, reply);
     }
 
 }
